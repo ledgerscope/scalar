@@ -71,8 +71,9 @@ public class ScalarOptionsExtensionsTests
         options.HideModels.Should().BeTrue();
         options.HideDownloadButton.Should().BeTrue();
         options.HideTestRequestButton.Should().BeTrue();
-        options.DarkMode.Should().BeFalse();
+        options.DarkMode.Should().BeFalse(); 
         options.ShowSidebar.Should().BeFalse();
+        options.SidebarShowPath.Should().BeFalse();
         options.Theme.Should().Be(ScalarTheme.Saturn);
         options.Layout.Should().Be(ScalarLayout.Classic);
         options.SearchHotKey.Should().Be("o");

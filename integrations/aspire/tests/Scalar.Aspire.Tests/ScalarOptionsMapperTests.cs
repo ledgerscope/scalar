@@ -15,6 +15,7 @@ public class ScalarOptionsMapperTests
         var configuration = configurations.First();
         configuration.ProxyUrl.Should().BeNull();
         configuration.ShowSidebar.Should().BeTrue();
+        configuration.SidebarShowPath.Should().BeFalse();
         configuration.HideModels.Should().BeFalse();
         configuration.HideTestRequestButton.Should().BeFalse();
         configuration.DarkMode.Should().BeTrue();

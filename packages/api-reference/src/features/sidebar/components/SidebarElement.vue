@@ -32,6 +32,20 @@ const { getFullHash, isIntersectionEnabled, replaceUrlState } = useNavState()
 
 const config = useConfig()
 
+const escapeHtml = (text: string): string => {
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
+}
+
+const getPathOrTitle = (item: TraversedEntry) => {
+  if ('path' in item) {
+    // wbr after each slash gives line break opportunity to wrap nicely
+    return escapeHtml(item.path).replace(/\//g, '/<wbr>')
+  }
+  return escapeHtml(item.title)
+}
+
 // We disable intersection observer on click
 const handleClick = async () => {
   // wait for a short delay before enabling intersection observer
@@ -126,9 +140,19 @@ const onAnchorClick = async (ev: Event) => {
         :href="generateLink()"
         :tabindex="hasChildren ? -1 : 0"
         @click="onAnchorClick">
-        <p class="sidebar-heading-link-title">
+        <p
+          v-if="config.sidebarShowPath"
+          class="sidebar-heading-link-title">
+          <span
+            class="hanging-indent"
+            v-html="getPathOrTitle(item)" />
+        </p>
+        <p
+          v-else
+          class="sidebar-heading-link-title">
           {{ item.title }}
         </p>
+
         <p
           v-if="'method' in item && !hasChildren"
           class="sidebar-heading-link-method">
@@ -185,6 +209,12 @@ const onAnchorClick = async (ev: Event) => {
 .sidebar-heading-link-title {
   margin: 0;
 }
+
+.sidebar-heading-link-title .hanging-indent {
+  padding-left: 0.7em;
+  text-indent: -0.7em;
+}
+
 .sidebar-heading:hover {
   background: var(
     --scalar-sidebar-item-hover-background,
