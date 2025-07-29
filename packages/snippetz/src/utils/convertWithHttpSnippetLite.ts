@@ -2,6 +2,33 @@ import type { Request } from '@/httpsnippet-lite/types/httpsnippet'
 import type { HarRequest } from '@scalar/types/snippetz'
 
 /**
+ * Helper function to extract URL from URL object
+ */
+function getUrl(urlObject: URL): string {
+  // If it's just the domain, omit the trailing slash
+  if (urlObject.pathname === '/') {
+    return urlObject.origin
+  }
+
+  const encodedPathname = urlObject.pathname
+    .split('/')
+    .map((segment) => getSegmentEncoded(decodeURIComponent(segment)))
+    .join('/')
+  return urlObject.origin + encodedPathname + urlObject.search
+}
+
+/**
+ * Helper function to encode a URL segment while preserving any bounding curly braces unencoded
+ */
+function getSegmentEncoded(segment: string): string {
+  if (/^{.+}$/.test(segment)) {
+    const withoutBrackets = segment.substring(1, segment.length - 1)
+    return '{' + encodeURIComponent(withoutBrackets) + '}'
+  }
+  return encodeURIComponent(segment)
+}
+
+/**
  * Takes a httpsnippet-lite client and converts the given request to a code example with it.
  *
  * @deprecated This a temporary wrapper around httpsnippet-lite. Let's write all the generators ourselves instead.
@@ -13,8 +40,7 @@ export function convertWithHttpSnippetLite(
 ): string {
   const urlObject = new URL(request?.url ?? '')
 
-  // If it's just the domain, omit the trailing slash
-  const url = urlObject.pathname === '/' ? urlObject.origin : urlObject.toString()
+  const url = getUrl(urlObject)
 
   const harRequest: HarRequest = {
     method: request?.method ?? 'GET',
